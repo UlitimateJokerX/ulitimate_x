@@ -1,7 +1,7 @@
 // Router
 import { Container } from 'react-bootstrap'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { menuItems } from '../../MenuItems'
+import { menuItems } from './MenuItems'
 
 function Dropdown (menu, index) {
   if (menu.submenu) {
