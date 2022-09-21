@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router-dom'
 
 // Pages
 import AllMeetupsPage from './pages/AllMeetups'
-import FavoritesPage from './pages/Favorites'
 import NewMeetupPage from './pages/NewMeetup'
 
 // Components
@@ -13,7 +12,6 @@ function App () {
     <Layout>
       <Routes>
         <Route path="/" exact element={<AllMeetupsPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/new-meetup" element={<NewMeetupPage />} />
       </Routes>
     </Layout>
