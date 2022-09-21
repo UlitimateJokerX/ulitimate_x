@@ -17,13 +17,13 @@ const DUMMY_DATA = [
   }
 ]
 
-function AllMeetupsPage () {
+function HomePage () {
   return (
     <section>
-      <h1>All Meetups</h1>
+      <h1>Home</h1>
       <MeetupList meetups={DUMMY_DATA} />
     </section>
   )
 }
 
-export default AllMeetupsPage
+export default HomePage
