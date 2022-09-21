@@ -1,5 +1,5 @@
 import Card from '../ui/Card'
-import classes from './NewMeetupForm.module.css'
+import classes from '../../css/NewMeetupForm.module.css'
 
 // Hooks
 import { useRef } from 'react'

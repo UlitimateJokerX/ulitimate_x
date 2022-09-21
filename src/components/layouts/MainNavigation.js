@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 
 // CSS Modules
-import classes from './MainNavigation.module.css'
+import classes from '../../css/MainNavigation.module.css'
 
 function MainNavigation () {
   return (
