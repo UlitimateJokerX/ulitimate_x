@@ -12,13 +12,9 @@ export const menuItems = [
     url: '/sports-analysis',
     submenu: [
       {
-        title: '玩運彩預測比例',
-        url: 'playsport-prediction',
-      },
-      {
-        title: '運彩小偉',
-        url: 'small-wei',
-      },
+        title: '賽事預測比例',
+        url: 'sport-prediction',
+      }
     ],
   }
 ];

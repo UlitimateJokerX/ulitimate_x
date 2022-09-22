@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 // Pages
 import HomePage from './pages/Home'
 import NewMeetupPage from './pages/NewMeetup'
-import PlaysportPrediction from './pages/PlaysportPrediction'
+import SportPrediction from './pages/SportPrediction'
 
 // Components
 import Layout from './components/layouts/Layout'
@@ -14,7 +14,7 @@ function App () {
       <Routes>
         <Route path="/" exact element={<HomePage />} />
         <Route path="/new-meetup" element={<NewMeetupPage />} />
-        <Route path="/playsport-prediction" element={<PlaysportPrediction />} />
+        <Route path="/sport-prediction" element={<SportPrediction />} />
       </Routes>
     </Layout>
   )

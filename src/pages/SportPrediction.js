@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { Button, ButtonToolbar, Form } from 'react-bootstrap'
 import Table from 'react-bootstrap/Table';
+import Spinner from 'react-bootstrap/Spinner'
 import moment from 'moment'
 import $ from 'jquery'
 import * as qs from 'qs'
 
 // 取得預測比例
-function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendListFunc) {
+function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendListFunc, setLoadingFunc) {
   const sport = e.target.value
+
+  setLoadingFunc(true)
 
   fetch(`/api/sport_analysis/playsport_prediction?sport=${sport}`)
     .then(r => r.json())
@@ -15,17 +18,22 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
       updateSelectedFunc(sport)
       updateDataFunc(d.ret)
 
+      setLoadingFunc(false)
+
       // 切換球種需清空checkbox與推薦清單
       updateRecommendListFunc([])
       $("input[type=checkbox]:checked").prop('checked', false)
     })
     .catch(e => {
       alert(`Call omnipotent system error: ${e.message}`)
+      setLoadingFunc(false)
     })
 }
 
 // 計算推薦清單
-function handleCalculate (e, selectedSport, updateRecommendList) {
+function handleCalculate (e, selectedSport, updateRecommendListFunc, setLoadingFunc) {
+  setLoadingFunc(true)
+
   const checked = $("input[type=checkbox]:checked")
   const matchArray = []
 
@@ -56,10 +64,12 @@ function handleCalculate (e, selectedSport, updateRecommendList) {
         }
       })
 
-      updateRecommendList(recommendList)
+      updateRecommendListFunc(recommendList)
+      setLoadingFunc(false)
     })
     .catch(e => {
       alert(`Call omnipotent system error: ${e.message}`)
+      setLoadingFunc(false)
     })
 }
 
@@ -135,7 +145,7 @@ function ShowData (props) {
         </tbody>
       </Table>
       <center>
-        <Button variant='danger' onClick={e => {handleCalculate(e, selectedSport, props.updateRecommendList)}}>Ｃalculate</Button>
+        <Button variant='danger' onClick={e => {handleCalculate(e, selectedSport, props.updateRecommendList, props.setLoading)}}>Ｃalculate</Button>
       </center>
     </div>
   )
@@ -164,17 +174,20 @@ function ShowRecommends (props) {
 /**
  * 主頁面：賽事預測
  */
-function PlaysportPrediction () {
+function SportPrediction () {
   const [selected, updateSelected] = useState('')
   const [data, updateData] = useState([])
   const [recommendList, updateRecommendList] = useState([])
+  const [isLoading, setLoading] = useState(false)
 
   return (
     <div>
       <Form>
         <Form.Group className='mb-3'>
           <Form.Text className='text-muted'>
-            <h1>{moment().format('YYYY-MM-DD')}</h1>
+            <h1>
+              賽事預測比例與計算推薦場次({moment().format('YYYY-MM-DD')})
+            </h1>
           </Form.Text>
         </Form.Group>
       </Form>
@@ -182,7 +195,7 @@ function PlaysportPrediction () {
         <Button
           className='mr-2'
           variant='primary'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList)}
+          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
           value='MLB'
         >
           MLB
@@ -190,7 +203,7 @@ function PlaysportPrediction () {
         <Button
           className='mr-2'
           variant='secondary'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList)}
+          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
           value='NPB'
         >
           NPB
@@ -198,7 +211,7 @@ function PlaysportPrediction () {
         <Button
           className='mr-2'
           variant='warning'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList)}
+          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
           value='CPBL'
         >
           CPBL
@@ -206,17 +219,18 @@ function PlaysportPrediction () {
         <Button
           className='mr-2'
           variant='info'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList)}
+          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
           value='KBO'
         >
           KBO
         </Button>
+        {!isLoading ? <></> : <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />}
       </ButtonToolbar>
       <br />
-      <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} />
+      <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
       <ShowRecommends data={recommendList} />
     </div>
   )
 }
 
-export default PlaysportPrediction
+export default SportPrediction
