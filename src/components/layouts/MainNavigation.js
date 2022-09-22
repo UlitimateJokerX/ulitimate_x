@@ -18,8 +18,8 @@ function Dropdown (menu, index) {
 function MainNavigation () {
   return (
     <header>
-      <Navbar bg="light" expand="lg">
-        <Container>
+      <Navbar bg='dark' variant='dark' expand='lg'>
+        <Container fluid>
           <Navbar.Brand href='/'>Ultimate X</Navbar.Brand>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
