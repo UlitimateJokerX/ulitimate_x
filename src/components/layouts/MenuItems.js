@@ -8,13 +8,16 @@ export const menuItems = [
     url: '/new-meetup',
   },
   {
-    title: 'Sports Analysis',
-    url: '/sports-analysis',
+    title: 'Sports',
     submenu: [
       {
-        title: '賽事預測比例',
-        url: 'sport-prediction',
+        title: 'Prediction',
+        url: '/sports/prediction',
       }
     ],
+  },
+  {
+    title: 'Tools',
+    url: '/tools',
   }
 ];

@@ -28,6 +28,9 @@ function MainNavigation () {
                 return Dropdown(menu, index)
               })}
             </Nav>
+            <Nav className='ml-auto'>
+              <Nav.Link href='/login_in'>Log in</Nav.Link>
+            </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>

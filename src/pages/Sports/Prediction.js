@@ -12,7 +12,7 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
 
   setLoadingFunc(true)
 
-  fetch(`/api/sport_analysis/playsport_prediction?sport=${sport}`)
+  fetch(`/api/sports/prediction?sport=${sport}`)
     .then(r => r.json())
     .then(d => {
       updateSelectedFunc(sport)
@@ -46,6 +46,8 @@ function handleCalculate (e, selectedSport, updateRecommendListFunc, setLoadingF
     }
 
     matchArray.push({match_id: matchId, playtype})
+
+    return ''
   })
 
   const queryString = qs.stringify({
@@ -53,15 +55,17 @@ function handleCalculate (e, selectedSport, updateRecommendListFunc, setLoadingF
     matches: matchArray
   })
 
-  fetch(`/api/sport_analysis/recommend?${queryString}`)
+  fetch(`/api/sports/recommend?${queryString}`)
     .then(r => r.json())
     .then(d => {
       const recommendList = []
 
       d.ret.map((recommend, index) => {
-        if (recommend.star == 3) {
+        if (recommend.star === 3) {
           recommendList.push(recommend.playtype)
         }
+
+        return ''
       })
 
       updateRecommendListFunc(recommendList)
@@ -155,7 +159,7 @@ function ShowData (props) {
 function ShowRecommends (props) {
   const recommendList = props.data
 
-  if (recommendList.length == 0) {
+  if (recommendList.length === 0) {
     return <div />
   }
 
@@ -174,7 +178,7 @@ function ShowRecommends (props) {
 /**
  * 主頁面：賽事預測
  */
-function SportPrediction () {
+function Prediction () {
   const [selected, updateSelected] = useState('')
   const [data, updateData] = useState([])
   const [recommendList, updateRecommendList] = useState([])
@@ -233,4 +237,4 @@ function SportPrediction () {
   )
 }
 
-export default SportPrediction
+export default Prediction

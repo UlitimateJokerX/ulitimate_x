@@ -1,7 +1,7 @@
 function HomePage () {
   return (
     <section>
-      <h1>Home</h1>
+      <h5>Welcome to Ulitimate X</h5>
     </section>
   )
 }
