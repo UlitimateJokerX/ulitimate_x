@@ -5,7 +5,7 @@ import { menuItems } from './MenuItems'
 
 function Dropdown (menu, index) {
   if (menu.submenu) {
-    return <NavDropdown id={index} title={menu.title} key={ImageBitmapRenderingContext}>
+    return <NavDropdown id={index} title={menu.title} key={index}>
       {menu.submenu.map((s, sindex) => (
         <NavDropdown.Item href={s.url} key={`${index}_${sindex}`}>{s.title}</NavDropdown.Item>
       ))}

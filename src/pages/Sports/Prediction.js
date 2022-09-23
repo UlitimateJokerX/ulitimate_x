@@ -168,7 +168,7 @@ function ShowRecommends (props) {
       <h1>[Recommend List]</h1>
       {
         recommendList.map((r, index) => {
-          return <h1>{r}</h1>
+          return <h1 key={index}>{r}</h1>
         })
       }
     </div>
@@ -178,7 +178,7 @@ function ShowRecommends (props) {
 /**
  * 主頁面：賽事預測
  */
-function Prediction () {
+function PredictionPage () {
   const [selected, updateSelected] = useState('')
   const [data, updateData] = useState([])
   const [recommendList, updateRecommendList] = useState([])
@@ -190,7 +190,7 @@ function Prediction () {
         <Form.Group className='mb-3'>
           <Form.Text className='text-muted'>
             <h1>
-              賽事預測比例與計算推薦場次({moment().format('YYYY-MM-DD')})
+              Match prediction and recommend({moment().format('YYYY-MM-DD')})
             </h1>
           </Form.Text>
         </Form.Group>
@@ -237,4 +237,4 @@ function Prediction () {
   )
 }
 
-export default Prediction
+export default PredictionPage
