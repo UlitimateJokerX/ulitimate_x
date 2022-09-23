@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, ButtonToolbar, Form } from 'react-bootstrap'
-import Table from 'react-bootstrap/Table';
+import Table from 'react-bootstrap/Table'
 import Spinner from 'react-bootstrap/Spinner'
 import moment from 'moment'
 import $ from 'jquery'

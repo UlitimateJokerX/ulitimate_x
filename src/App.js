@@ -12,9 +12,9 @@ function App () {
   return (
     <Layout>
       <Routes>
-        <Route path="/" exact element={<HomePage />} />
-        <Route path="/new-meetup" element={<NewMeetupPage />} />
-        <Route path="/sports/prediction" element={<Prediction />} />
+        <Route path='/' exact element={<HomePage />} />
+        <Route path='/new-meetup' element={<NewMeetupPage />} />
+        <Route path='/sports/prediction' element={<Prediction />} />
       </Routes>
     </Layout>
   )
