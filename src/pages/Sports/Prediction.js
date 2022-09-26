@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Button, ButtonToolbar, Form } from 'react-bootstrap'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import Spinner from 'react-bootstrap/Spinner'
 import moment from 'moment'
@@ -87,12 +90,12 @@ function ShowData (props) {
   }
 
   if (selectedSport !== '' && predictionResult.length === 0) {
-    return <h1>{selectedSport} has no match today or not yet open betting.</h1>
+    return <h3 className='text-center'>{selectedSport} has no match today or not yet open betting.</h3>
   }
 
   return (
     <div>
-      <Table striped hover variant='dark' className='text-center'>
+      <Table striped hover variant='dark' className='text-center' responsive>
         <thead>
           <tr>
             <th>Match</th>
@@ -189,49 +192,74 @@ function PredictionPage () {
       <Form>
         <Form.Group className='mb-3'>
           <Form.Text className='text-muted'>
-            <h1>
+            <h3 className='text-center'>
               Match prediction and recommend({moment().format('YYYY-MM-DD')})
-            </h1>
+            </h3>
           </Form.Text>
         </Form.Group>
       </Form>
-      <ButtonToolbar>
-        <Button
-          className='mr-2'
-          variant='primary'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
-          value='MLB'
-        >
-          MLB
-        </Button>
-        <Button
-          className='mr-2'
-          variant='secondary'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
-          value='NPB'
-        >
-          NPB
-        </Button>
-        <Button
-          className='mr-2'
-          variant='warning'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
-          value='CPBL'
-        >
-          CPBL
-        </Button>
-        <Button
-          className='mr-2'
-          variant='info'
-          onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
-          value='KBO'
-        >
-          KBO
-        </Button>
-        {!isLoading ? <></> : <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />}
-      </ButtonToolbar>
-      <br />
-      <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
+      <Container fluid>
+        <Row className='justify-content-md-center'>
+          <Col sm={1} className='text-right'><h3>⚾</h3></Col>
+          <Col sm={5}>
+            <ButtonToolbar>
+              <Button
+                className='mr-2'
+                variant='primary'
+                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                value='MLB'
+              >
+                MLB
+              </Button>
+              <Button
+                className='mr-2'
+                variant='secondary'
+                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                value='NPB'
+              >
+                NPB
+              </Button>
+              <Button
+                className='mr-2'
+                variant='warning'
+                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                value='CPBL'
+              >
+                CPBL
+              </Button>
+              <Button
+                className='mr-2'
+                variant='info'
+                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                value='KBO'
+              >
+                KBO
+              </Button>
+            </ButtonToolbar>
+          </Col>
+          <Col sm={1} className='text-right'><h3>🏀</h3></Col>
+          <Col sm={5}>
+            <ButtonToolbar>
+              <Button
+                className='mr-2'
+                variant='primary'
+                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                value='NBA'
+              >
+                NBA
+              </Button>
+            </ButtonToolbar>
+          </Col>
+        </Row>
+      </Container>
+      {
+        !isLoading ?
+        <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
+        :
+        <div className='text-center'>
+          <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />
+        </div>
+      }
       <ShowRecommends data={recommendList} />
     </div>
   )
