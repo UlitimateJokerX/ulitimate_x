@@ -4,8 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/Home'
 import NewMeetupPage from './pages/NewMeetup'
 import PredictionPage from './pages/Sports/Prediction'
-import AccountsPage from './pages/Banks/Accounts'
-import CreditCardsPage from './pages/Banks/CreditCards'
+import BankPage from './pages/Bank'
 
 function RouteList () {
   return (
@@ -17,8 +16,7 @@ function RouteList () {
       {/* 運動相關 */}
       <Route path='/sports/prediction' element={<PredictionPage />} />
       {/* 銀行相關 */}
-      <Route path='/banks/accounts' element={<AccountsPage />} />
-      <Route path='/banks/credit-cards' element={<CreditCardsPage />} />
+      <Route path='/bank' element={<BankPage />} />
     </Routes>
   )
 }

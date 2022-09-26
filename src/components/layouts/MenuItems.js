@@ -15,18 +15,10 @@ export const menuItems = [
         url: '/sports/prediction',
       }
     ],
-  },{
-    title: 'Banks',
-    submenu: [
-      {
-        title: 'Accounts',
-        url: '/banks/accounts',
-      },
-      {
-        title: 'Credit Cards',
-        url: '/banks/credit-cards',
-      }
-    ],
+  },
+  {
+    title: 'Bank',
+    url: '/bank',
   },
   {
     title: 'Tools',

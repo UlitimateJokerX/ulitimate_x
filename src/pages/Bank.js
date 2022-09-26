@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from 'react'
+import { Container, Row, Col } from 'react-bootstrap'
 import Spinner from 'react-bootstrap/Spinner'
 
-function AccountsPage () {
+function ShowBankList (props) {
+
+
+  return (
+    <Container>
+      <Row>
+        <Col>
+        </Col>
+      </Row>
+    </Container>
+  )
+}
+
+function BankPage () {
   const windowUrl = window.location.search
   const params = new URLSearchParams(windowUrl)
   const accNo = params.get('acc_no')
 
-  const [accountList, setAccountList] = useState([])
+  const [bankList, setBankList] = useState([])
   const [isLoading, setLoading] = useState(true)
 
-  // 頁面載入時取得accounts資料
+  // 頁面載入時取得資料
   useEffect(() => {
-    getAccountList()
+    getBankList()
   }, [])
 
-  const getAccountList = () => {
-    fetch('/api/banks/accounts')
+  const getBankList = () => {
+    fetch('/api/banks')
       .then(r => r.json())
       .then(d => {
-        setAccountList(d.ret)
+        setBankList(d.ret)
         setLoading(false)
       })
       .catch(e => {
@@ -32,11 +46,12 @@ function AccountsPage () {
       <span>
         {!isLoading ? <></> : <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />}
       </span>
+
       {
-        accountList.map((a, i) => {
+        bankList.map((a, i) => {
           return (
             <div key={i}>
-              <h1>{a.id},{a.name}</h1>
+              <h1>{a.name}</h1>
             </div>
           )
         })
@@ -45,4 +60,4 @@ function AccountsPage () {
   )
 }
 
-export default AccountsPage
+export default BankPage
