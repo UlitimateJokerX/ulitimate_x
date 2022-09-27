@@ -6,8 +6,6 @@ import Session from './Session'
 function App () {
   const {session_id, setSession} = Session()
 
-  console.log(sessionStorage)
-
   return (
     <Layout>
     {
