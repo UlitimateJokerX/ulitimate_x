@@ -29,7 +29,7 @@ function MainNavigation () {
               })}
             </Nav>
             <Nav className='ml-auto'>
-              <Nav.Link href='/login_in'>Log in</Nav.Link>
+              <Nav.Link href='/logout'>Log Out</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

@@ -4,10 +4,6 @@ export const menuItems = [
     url: '/',
   },
   {
-    title: 'New Meetup',
-    url: '/new-meetup',
-  },
-  {
     title: 'Sports',
     submenu: [
       {

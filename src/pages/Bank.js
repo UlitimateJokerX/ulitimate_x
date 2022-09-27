@@ -3,14 +3,20 @@ import { Container, Row, Col } from 'react-bootstrap'
 import Spinner from 'react-bootstrap/Spinner'
 
 function ShowBankList (props) {
-
+  const banks = props.bankList
 
   return (
     <Container>
-      <Row>
-        <Col>
-        </Col>
-      </Row>
+    {
+      banks.map((bankInfo, index) => {
+        return (
+          <Row key={index}>
+            <Col>{bankInfo.code}</Col>
+            <Col>{bankInfo.name}</Col>
+          </Row>
+        )
+      })
+    }
     </Container>
   )
 }
@@ -18,7 +24,6 @@ function ShowBankList (props) {
 function BankPage () {
   const windowUrl = window.location.search
   const params = new URLSearchParams(windowUrl)
-  const accNo = params.get('acc_no')
 
   const [bankList, setBankList] = useState([])
   const [isLoading, setLoading] = useState(true)
@@ -46,16 +51,7 @@ function BankPage () {
       <span>
         {!isLoading ? <></> : <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />}
       </span>
-
-      {
-        bankList.map((a, i) => {
-          return (
-            <div key={i}>
-              <h1>{a.name}</h1>
-            </div>
-          )
-        })
-      }
+      <ShowBankList bankList={bankList} />
     </div>
   )
 }
