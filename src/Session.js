@@ -3,9 +3,9 @@ import { useState } from 'react'
  function Session () {
   const getSession = () => {
     return sessionStorage.getItem('session-id')
-  };
+  }
 
-  const [sessionId, setSession] = useState(getSession());
+  const [sessionId, setSession] = useState(getSession())
 
   const saveSession = userSessionId => {
     sessionStorage.setItem('session-id', userSessionId)

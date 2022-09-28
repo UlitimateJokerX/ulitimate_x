@@ -6,11 +6,16 @@ function LogoutPage () {
   const navigate = useNavigate()
   const { deleteSession } = Session()
 
-  useEffect(async () => {
-    await deleteSession()
+  useEffect(() => {
+    async function deleteSessionFunc () {
+      await deleteSession()
 
-    navigate(-1)
-  }, []);
+      // 登出後回到上一頁
+      navigate(-1)
+    }
+
+    deleteSessionFunc()
+  }, [])
 
   return <></>
 }

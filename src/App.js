@@ -7,12 +7,10 @@ function App () {
   const {session_id, setSession} = Session()
 
   return (
-    <Layout>
+    <Layout sessionId={session_id}>
     {
       !session_id ?
-      <>
-        <Login setSession={setSession} />
-      </>
+      <Login setSession={setSession} />
       :
       <RouteList />
     }
