@@ -42,6 +42,9 @@ async function handleLogin (e, userInput, funcs) {
     })
 }
 
+/**
+ * 登入頁面
+ */
 function LoginPage ({setSession}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')

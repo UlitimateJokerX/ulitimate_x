@@ -1,18 +1,16 @@
 import { useState } from 'react'
 
- function Session () {
-  const getSession = () => {
-    return sessionStorage.getItem('session-id')
-  }
+function Session () {
+  const [sessionId, setSession] = useState(sessionStorage.getItem('session-id'))
 
-  const [sessionId, setSession] = useState(getSession())
-
+  // Save Session
   const saveSession = userSessionId => {
     sessionStorage.setItem('session-id', userSessionId)
 
     setSession(userSessionId)
   }
 
+  // Remove Session
   const deleteSession = () => {
     sessionStorage.removeItem('session-id')
 
@@ -20,8 +18,8 @@ import { useState } from 'react'
   }
 
   return {
-    setSession: saveSession,
     session_id: sessionId,
+    setSession: saveSession,
     deleteSession
   }
 }

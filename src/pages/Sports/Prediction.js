@@ -84,7 +84,7 @@ function ShowData (props) {
   const predictionResult = props.data
 
   if (selectedSport === '' && predictionResult.length === 0) {
-    return <h1>Choose one kind of sport.</h1>
+    return <></>
   }
 
   if (selectedSport !== '' && predictionResult.length === 0) {
@@ -177,7 +177,7 @@ function ShowRecommends (props) {
 }
 
 /**
- * 主頁面：賽事預測
+ * 賽事預測頁面
  */
 function PredictionPage () {
   const [selected, updateSelected] = useState('')
@@ -252,13 +252,16 @@ function PredictionPage () {
       </Container>
       {
         !isLoading ?
-        <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
+        <>
+          <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
+          <ShowRecommends data={recommendList} />
+        </>
         :
         <div className='text-center'>
           <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />
         </div>
       }
-      <ShowRecommends data={recommendList} />
+
     </div>
   )
 }
