@@ -11,8 +11,14 @@ import Notification, { notify } from 'react-notify-bootstrap'
 import classes from '../css/Bank.module.css'
 
 // 新增銀行資訊
-function handleAdd (funcs) {
-  funcs.handleClose(false)
+function handleAdd (newBank, funcs) {
+  console.log(newBank)
+
+  // funcs.setCode()
+  // funcs.setBankName()
+  // funcs.setAccountNo()
+
+  // funcs.handleClose()
 }
 
 // 取得單一銀行詳細資料
@@ -44,6 +50,20 @@ function AddBankModel (props) {
   const show = props.show
   const handleClose = props.handleClose
 
+  const [code, setCode] = useState()
+  const [bankName, setBankName] = useState()
+  const [accountNo, setAccountNo] = useState()
+
+  const funcs = {
+    handleClose
+  }
+
+  const newBank = {
+    code: code,
+    bank_name: bankName,
+    account_no: accountNo
+  }
+
   return (
     <Modal show={show} onHide={handleClose} backdrop='static' size='lg'>
       <Modal.Header closeButton>
@@ -57,14 +77,14 @@ function AddBankModel (props) {
               <Form.Control
                 type='text'
                 placeholder='code'
-                // onChange={e => setUsername(e.target.value)}
+                onChange={e => setCode(e.target.value)}
               />
             </Col>
             <Col sm='5'>
               <Form.Control
                 type='text'
                 placeholder='bank name'
-                // onChange={e => setUsername(e.target.value)}
+                onChange={e => setBankName(e.target.value)}
               />
             </Col>
           </Form.Group>
@@ -74,13 +94,13 @@ function AddBankModel (props) {
               <Form.Control
                 type='text'
                 placeholder='account no.'
-                // onChange={e => setUsername(e.target.value)}
+                onChange={e => setAccountNo(e.target.value)}
               />
             </Col>
           </Form.Group>
           <Form.Group as={Row} className='text-center'>
             <Col sm='12' className='text-center'>
-              <Button variant='info' onClick={e => handleAdd({handleClose})}>
+              <Button variant='info' onClick={e => handleAdd(newBank, funcs)}>
                 Save
               </Button>
             </Col>
