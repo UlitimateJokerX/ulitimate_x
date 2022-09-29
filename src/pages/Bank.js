@@ -46,7 +46,7 @@ function AddBankModel (props) {
 
   return (
     <Modal show={show} onHide={handleClose} backdrop='static' size='lg'>
-      <Modal.Header>
+      <Modal.Header closeButton>
         <Modal.Title>Add new bank information</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -68,7 +68,7 @@ function AddBankModel (props) {
               />
             </Col>
           </Form.Group>
-          <Form.Group as={Row}>
+          <Form.Group className='mb-3' as={Row}>
             <Form.Label column sm='3' className='text-right'>Account</Form.Label>
             <Col sm='7'>
               <Form.Control
@@ -78,16 +78,15 @@ function AddBankModel (props) {
               />
             </Col>
           </Form.Group>
+          <Form.Group as={Row} className='text-center'>
+            <Col sm='12' className='text-center'>
+              <Button variant='info' onClick={e => handleAdd({handleClose})}>
+                Save
+              </Button>
+            </Col>
+          </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
-          Close
-        </Button>
-        <Button variant='primary' onClick={e => handleAdd({handleClose})}>
-          Save
-        </Button>
-      </Modal.Footer>
     </Modal>
   )
 }
@@ -194,7 +193,7 @@ function ShowAccounts (props) {
           return (
             <div key={index}>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Account Number</Badge>
+                <Badge pill bg='info' className={classes.account}>Acc No.</Badge>
                 {' '}
                 <Form.Label>
                   {account.account_no}
