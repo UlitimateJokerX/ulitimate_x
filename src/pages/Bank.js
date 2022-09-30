@@ -53,6 +53,8 @@ function AddBankModel (props) {
   const [code, setCode] = useState()
   const [bankName, setBankName] = useState()
   const [accountNo, setAccountNo] = useState()
+  const [currency, setCurrency] = useState()
+  const [isDigital, setIsDigital] = useState()
 
   const funcs = {
     handleClose
@@ -61,11 +63,25 @@ function AddBankModel (props) {
   const newBank = {
     code: code,
     bank_name: bankName,
-    account_no: accountNo
+    account_no: accountNo,
+    currency: currency,
+    is_digital: isDigital
+  }
+
+  function closeModal () {
+    // clear input values
+    setCode()
+    setBankName()
+    setAccountNo()
+    setCurrency()
+    setIsDigital()
+
+    // close modal
+    handleClose()
   }
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop='static' size='lg'>
+    <Modal show={show} onHide={closeModal} backdrop='static' size='lg'>
       <Modal.Header closeButton>
         <Modal.Title>Add new bank information</Modal.Title>
       </Modal.Header>
@@ -87,16 +103,96 @@ function AddBankModel (props) {
                 onChange={e => setBankName(e.target.value)}
               />
             </Col>
+            <Col sm='2' />
+          </Form.Group>
+          <hr />
+          <Form.Group className='mb-3' as={Row}>
+            <Col sm='12' className='text-center'>
+              <h3><Badge bg='secondary' size='xl'>Account Information</Badge></h3>
+            </Col>
           </Form.Group>
           <Form.Group className='mb-3' as={Row}>
             <Form.Label column sm='3' className='text-right'>Account</Form.Label>
-            <Col sm='7'>
+            <Col sm='4'>
               <Form.Control
                 type='text'
                 placeholder='account no.'
                 onChange={e => setAccountNo(e.target.value)}
               />
             </Col>
+            <Col sm='4'>
+              <Form.Check
+                inline
+                label='Traditional'
+                name='is-digital'
+                type='radio'
+                id='is-digital-traditional'
+                onClick={e => setIsDigital(false)}
+              />
+              <Form.Check
+                inline
+                label='Digital'
+                name='is-digital'
+                type='radio'
+                id='is-digital-digital'
+                onClick={e => setIsDigital(true)}
+              />
+            </Col>
+            <Col sm='2' />
+          </Form.Group>
+          <Form.Group className='mb-3' as={Row}>
+            <Form.Label column sm='3' className='text-right'>Currency</Form.Label>
+            <Col sm='3'>
+              <Form.Check
+                inline
+                label='TWD'
+                name='currency'
+                type='radio'
+                id='radio-twd'
+                value='twd'
+                onClick={e => setCurrency(e.target.value)}
+              />
+              <Form.Check
+                inline
+                label='Foreign'
+                name='currency'
+                type='radio'
+                id='radio-foreign'
+                value='foreign'
+                onClick={e => setCurrency(e.target.value)}
+              />
+            </Col>
+            <Form.Label column sm='2' className='text-right'>Card PIN</Form.Label>
+            <Col sm='2'>
+              <Form.Control
+                type='text'
+                placeholder=''
+                // onChange={e => setCode(e.target.value)}
+              />
+            </Col>
+            <Col sm='2' />
+          </Form.Group>
+          <Form.Group className='mb-3' as={Row}>
+            <Form.Label column sm='3' className='text-right'>Fee Discount</Form.Label>
+            <Col sm='1'>
+              <Badge bg='info'>Transfer</Badge>
+            </Col>
+            <Col sm='2'>
+              <Form.Control
+                type='text'
+                // onChange={e => setBankName(e.target.value)}
+              />
+            </Col>
+            <Col sm='1'>
+              <Badge bg='warning'>Withdraw</Badge>
+            </Col>
+            <Col sm='2'>
+              <Form.Control
+                type='text'
+                // onChange={e => setBankName(e.target.value)}
+              />
+            </Col>
+            <Form.Label column sm='3' className='text-left'>(times per month)</Form.Label>
           </Form.Group>
           <Form.Group as={Row} className='text-center'>
             <Col sm='12' className='text-center'>
@@ -163,7 +259,6 @@ function ShowBankList (props) {
 // 列出單一銀行詳細資訊
 function ShowBankDetail (props) {
   const bank = props.bankInfo
-  const [key, setKey] = useState()
 
   if (props.isDetailLoading || Object.keys(bank).length === 0) {
     return (
@@ -181,7 +276,7 @@ function ShowBankDetail (props) {
         </h2>
       </Col>
       <Col sm='12'>
-        <Tabs onSelect={k => setKey(k)} justify variant='tabs' className='mb-3'>
+        <Tabs justify variant='tabs' className='mb-3'>
           <Tab eventKey='accounts' title='Accounts'>
           {
             accounts.length === 0 ?
@@ -213,13 +308,13 @@ function ShowAccounts (props) {
           return (
             <div key={index}>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Acc No.</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>Acc No.</Badge>
                 {' '}
                 <Form.Label>
                   {account.account_no}
                 </Form.Label>
                 {' '}
-                <Form.Label className={classes.account}>
+                <Form.Label className={classes.vcenter}>
                   <Badge bg={account.is_foreign_currency === '0' ? 'info' : 'light'}>台</Badge>
                   <Badge bg={account.is_foreign_currency === '1' ? 'danger' : 'light'}>外</Badge>
                   <Badge bg={account.is_digital === '0' ? 'success' : 'light'}>實</Badge>
@@ -227,7 +322,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Fee Discount</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>Fee Discount</Badge>
                 {' '}
                 <Form.Label>
                 { account.zero_transfer_fee_times === '' ?
@@ -243,7 +338,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>PIN</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>PIN</Badge>
                 {' '}
                 <Form.Label>
                 { account.card_pin === '' ?
@@ -256,7 +351,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Web ID</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>Web ID</Badge>
                 {' '}
                 <Form.Label>
                 { account.web_id === '' ?
@@ -269,7 +364,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>E-mail</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>E-mail</Badge>
                 {' '}
                 <Form.Label>
                 { account.email === '' ?
@@ -282,7 +377,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Address</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>Address</Badge>
                 {' '}
                 <Form.Label>
                 { account.address === '' ?
@@ -295,7 +390,7 @@ function ShowAccounts (props) {
                 </Form.Label>
               </Col>
               <Col sm='12'>
-                <Badge pill bg='info' className={classes.account}>Memo</Badge>
+                <Badge pill bg='info' className={classes.vcenter}>Memo</Badge>
                 {' '}
                 <Form.Label>
                 { account.memo === '' ?

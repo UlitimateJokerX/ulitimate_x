@@ -44,7 +44,7 @@ function MainNavigation (props) {
             {menuItems.map((menu, index) => {
               // 不用顯示首頁選單
               if (index === 0) {
-                return
+                return ''
               }
 
               return Dropdown(menu, index)
