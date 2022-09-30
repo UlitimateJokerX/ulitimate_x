@@ -6,6 +6,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import moment from 'moment'
 import $ from 'jquery'
 import * as qs from 'qs'
+import Notification, { notify } from 'react-notify-bootstrap'
 
 // 取得預測比例
 function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendListFunc, setLoadingFunc) {
@@ -16,6 +17,10 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
   fetch(`/api/sports/prediction?sport=${sport}`)
     .then(r => r.json())
     .then(d => {
+      if (d.result !== 'ok') {
+        throw new Error(d.msg)
+      }
+
       updateSelectedFunc(sport)
       updateDataFunc(d.ret)
 
@@ -26,7 +31,11 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
       $("input[type=checkbox]:checked").prop('checked', false)
     })
     .catch(e => {
-      alert(`Call omnipotent system error: ${e.message}`)
+      notify({
+        text:`Call omnipotent system error: ${e.message}`,
+        variant: 'danger'
+      })
+
       setLoadingFunc(false)
     })
 }
@@ -73,7 +82,11 @@ function handleCalculate (e, selectedSport, updateRecommendListFunc, setLoadingF
       setLoadingFunc(false)
     })
     .catch(e => {
-      alert(`Call omnipotent system error: ${e.message}`)
+      notify({
+        text:`Call omnipotent system error: ${e.message}`,
+        variant: 'danger'
+      })
+
       setLoadingFunc(false)
     })
 }
@@ -186,7 +199,7 @@ function PredictionPage () {
   const [isLoading, setLoading] = useState(false)
 
   return (
-    <div>
+    <>
       <Form>
         <Form.Group className='mb-3'>
           <Form.Text className='text-muted'>
@@ -261,8 +274,8 @@ function PredictionPage () {
           <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />
         </div>
       }
-
-    </div>
+      <Notification options={{position: 'top'}} />
+    </>
   )
 }
 
