@@ -9,7 +9,7 @@ import * as qs from 'qs'
 import Notification, { notify } from 'react-notify-bootstrap'
 
 // 取得預測比例
-function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendListFunc, setLoadingFunc) {
+function handleSelect (e, updateSelectedFunc, updateDataFunc, setLoadingFunc) {
   const sport = e.target.value
 
   setLoadingFunc(true)
@@ -25,10 +25,6 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
       updateDataFunc(d.ret)
 
       setLoadingFunc(false)
-
-      // 切換球種需清空checkbox與推薦清單
-      updateRecommendListFunc([])
-      $("input[type=checkbox]:checked").prop('checked', false)
     })
     .catch(e => {
       notify({
@@ -40,58 +36,21 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, updateRecommendLis
     })
 }
 
-// 計算推薦清單
-function handleCalculate (e, selectedSport, updateRecommendListFunc, setLoadingFunc) {
-  setLoadingFunc(true)
+// 顯示推薦符號
+function ShowRecommendEmoji (props) {
+  const num = props.num
+  const total = props.total
+  const exportRecommended = $(`input#${props.mid}`)
+  console.log(exportRecommended.prop("checked"))
 
-  const checked = $("input[type=checkbox]:checked")
-  const matchArray = []
+  if ((num / total) > 0.7) {
+    return <>👑</>
+  }
 
-  checked.map(m => {
-    const matchId = checked[m].id.split('_')[0]
-    let playtype = checked[m].id.split('_')[1]
-
-    if (checked[m].id.split('_').length > 2) {
-      playtype = `${checked[m].id.split('_')[1]}_${checked[m].id.split('_')[2]}`
-    }
-
-    matchArray.push({match_id: matchId, playtype})
-
-    return ''
-  })
-
-  const queryString = qs.stringify({
-    sport: selectedSport,
-    matches: matchArray
-  })
-
-  fetch(`/api/sports/recommend?${queryString}`)
-    .then(r => r.json())
-    .then(d => {
-      const recommendList = []
-
-      d.ret.map((recommend, index) => {
-        if (recommend.star === 3) {
-          recommendList.push(recommend.playtype)
-        }
-
-        return ''
-      })
-
-      updateRecommendListFunc(recommendList)
-      setLoadingFunc(false)
-    })
-    .catch(e => {
-      notify({
-        text:`Call omnipotent system error: ${e.message}`,
-        variant: 'danger'
-      })
-
-      setLoadingFunc(false)
-    })
+  return <></>
 }
 
-// 顯示預測比例
+// 顯示預測人數
 function ShowData (props) {
   const selectedSport = props.selected
   const predictionResult = props.data
@@ -109,82 +68,70 @@ function ShowData (props) {
       <Table striped hover variant='dark' className='text-center' responsive>
         <thead>
           <tr>
+            <th></th>
             <th>Match</th>
-            <th>Strong<br />Team</th>
-            <th>Resource</th>
-            <th>Away Win</th>
-            <th>Home Win</th>
-            <th>Weak+1.5</th>
-            <th>Strong-1.5</th>
-            <th>Total Big</th>
-            <th>Total Small</th>
+            <th>Who Win?</th>
+            <th>Handicap</th>
+            <th>Score</th>
           </tr>
         </thead>
         <tbody>
-          {predictionResult.map((r, index) => {
+        {
+          predictionResult.map((r, index) => {
             return (
-              <tr key={r.match_id}>
-                <td>{r.match}</td>
-                <td>{r.strong_team}</td>
-                <td>Forum<br />Expert</td>
+              <tr key={r.id}>
+                <td>{r.time}</td>
+                <td>{r.team_away}<br />@{r.team_home}</td>
                 <td>
-                  {r.away_win}
+                  <ShowRecommendEmoji num={r.away_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_away_win`} />
+                  {r.team_away}({r.away_win_num})
+                  {' '}
+                  <input type='checkbox' id={`${r.id}_away_win`} />
                   <br />
-                  <input type='checkbox' id={`${r.match_id}_away_win`} />
+                  <ShowRecommendEmoji num={r.home_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_home_win`} />
+                  {r.team_home}({r.home_win_num})
+                  {' '}
+                  <input type='checkbox' id={`${r.id}_home_win`} />
                 </td>
                 <td>
-                  {r.home_win}
-                  <br />
-                  <input type='checkbox' id={`${r.match_id}_home_win`} />
+                {
+                  r.stronger_team === 'home' ?
+                  <>
+                    客+{r.handicap_score}({r.handicap_weak_num})
+                    {' '}
+                    <input type='checkbox' id={`${r.id}_handicap_weak`} />
+                    <br />
+                    主-{r.handicap_score}({r.handicap_strong_num})
+                    {' '}
+                    <input type='checkbox' id={`${r.id}_handicap_strong`} />
+                  </>
+                  :
+                  <>
+                    客-{r.handicap_score}({r.handicap_strong_num})
+                    {' '}
+                    <input type='checkbox' id={`${r.id}_handicap_strong`} />
+                    <br />
+                    主+{r.handicap_score}({r.handicap_weak_num})
+                    {' '}
+                    <input type='checkbox' id={`${r.id}_handicap_weak`} />
+                  </>
+                }
                 </td>
                 <td>
-                  {r.handicap_weak}
+                  大{r.total_score}({r.total_big_num})
+                  {' '}
+                  <input type='checkbox' id={`${r.id}_total_big`} />
                   <br />
-                  <input type='checkbox' id={`${r.match_id}_handicap_weak`} />
-                </td>
-                <td>
-                  {r.handicap_strong}
-                  <br />
-                  <input type='checkbox' id={`${r.match_id}_handicap_strong`} />
-                </td>
-                <td>
-                  {r.total_big}
-                  <br />
-                  <input type='checkbox' id={`${r.match_id}_total_big`} />
-                </td>
-                <td>
-                  {r.total_small}
-                  <br />
-                  <input type='checkbox' id={`${r.match_id}_total_small`} />
+                  小{r.total_score}({r.total_small_num})
+                  {' '}
+                  <input type='checkbox' id={`${r.id}_total_small`} />
                 </td>
               </tr>
             )
-          })}
+          })
+        }
         </tbody>
       </Table>
-      <center>
-        <Button variant='danger' onClick={e => {handleCalculate(e, selectedSport, props.updateRecommendList, props.setLoading)}}>Ｃalculate</Button>
-      </center>
-    </div>
-  )
-}
-
-// 顯示推薦清單
-function ShowRecommends (props) {
-  const recommendList = props.data
-
-  if (recommendList.length === 0) {
-    return <div />
-  }
-
-  return (
-    <div>
-      <h1>[Recommend List]</h1>
-      {
-        recommendList.map((r, index) => {
-          return <h1 key={index}>{r}</h1>
-        })
-      }
     </div>
   )
 }
@@ -195,7 +142,6 @@ function ShowRecommends (props) {
 function PredictionPage () {
   const [selected, updateSelected] = useState('')
   const [data, updateData] = useState([])
-  const [recommendList, updateRecommendList] = useState([])
   const [isLoading, setLoading] = useState(false)
 
   return (
@@ -204,7 +150,7 @@ function PredictionPage () {
         <Form.Group className='mb-3'>
           <Form.Text className='text-muted'>
             <h3 className='text-center'>
-              Match prediction and recommend({moment().format('YYYY-MM-DD')})
+              Match prediction({moment().format('YYYY-MM-DD')})
             </h3>
           </Form.Text>
         </Form.Group>
@@ -217,7 +163,7 @@ function PredictionPage () {
               <Button
                 className='mr-2'
                 variant='primary'
-                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                onClick={e => handleSelect(e, updateSelected, updateData, setLoading)}
                 value='MLB'
               >
                 MLB
@@ -225,7 +171,7 @@ function PredictionPage () {
               <Button
                 className='mr-2'
                 variant='secondary'
-                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                onClick={e => handleSelect(e, updateSelected, updateData, setLoading)}
                 value='NPB'
               >
                 NPB
@@ -233,7 +179,7 @@ function PredictionPage () {
               <Button
                 className='mr-2'
                 variant='warning'
-                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                onClick={e => handleSelect(e, updateSelected, updateData, setLoading)}
                 value='CPBL'
               >
                 CPBL
@@ -241,7 +187,7 @@ function PredictionPage () {
               <Button
                 className='mr-2'
                 variant='info'
-                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                onClick={e => handleSelect(e, updateSelected, updateData, setLoading)}
                 value='KBO'
               >
                 KBO
@@ -254,7 +200,7 @@ function PredictionPage () {
               <Button
                 className='mr-2'
                 variant='primary'
-                onClick={e => handleSelect(e, updateSelected, updateData, updateRecommendList, setLoading)}
+                onClick={e => handleSelect(e, updateSelected, updateData, setLoading)}
                 value='NBA'
               >
                 NBA
@@ -266,8 +212,7 @@ function PredictionPage () {
       {
         !isLoading ?
         <>
-          <ShowData data={data} selected={selected} updateRecommendList={updateRecommendList} setLoading={setLoading} />
-          <ShowRecommends data={recommendList} />
+          <ShowData data={data} selected={selected} setLoading={setLoading} />
         </>
         :
         <div className='text-center'>
