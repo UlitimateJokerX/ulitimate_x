@@ -50,6 +50,11 @@ function ShowRecommendEmoji (props) {
   return <></>
 }
 
+// 專家推薦勾選
+function handleExportRecommend (e) {
+  console.log(e.target.checked)
+}
+
 // 顯示預測人數
 function ShowData (props) {
   const selectedSport = props.selected
@@ -86,7 +91,7 @@ function ShowData (props) {
                   <ShowRecommendEmoji num={r.away_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_away_win`} />
                   {r.team_away}({r.away_win_num})
                   {' '}
-                  <input type='checkbox' id={`${r.id}_away_win`} />
+                  <input type='checkbox' id={`${r.id}_away_win`} onClick={handleExportRecommend} />
                   <br />
                   <ShowRecommendEmoji num={r.home_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_home_win`} />
                   {r.team_home}({r.home_win_num})
