@@ -4,8 +4,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 import Table from 'react-bootstrap/Table'
 import Spinner from 'react-bootstrap/Spinner'
 import moment from 'moment'
-import $ from 'jquery'
-import * as qs from 'qs'
+import _ from 'lodash'
 import Notification, { notify } from 'react-notify-bootstrap'
 
 // 取得預測比例
@@ -38,27 +37,57 @@ function handleSelect (e, updateSelectedFunc, updateDataFunc, setLoadingFunc) {
 
 // 顯示推薦符號
 function ShowRecommendEmoji (props) {
-  const num = props.num
-  const total = props.total
-  const exportRecommended = $(`input#${props.mid}`)
-  console.log(exportRecommended.prop("checked"))
+  const playtypeCorrespondenceMap = {
+    'away_win': 'home_win',
+    'home_win': 'away_win',
+    'handicap_weak': 'handicap_strong',
+    'handicap_strong': 'handicap_weak',
+    'total_big': 'total_small',
+    'total_small': 'total_big'
+  }
+  const playtype = props.playtype
+  const num = props.match[`${props.playtype}_num`]
+  const total = num + props.match[`${playtypeCorrespondenceMap[`${playtype}`]}_num`]
+  const recommendScore = _.includes(props.exportRecommend[playtype], props.match.id) ? 0.5 : 0
+  let recommendEmoji = ''
 
-  if ((num / total) > 0.7) {
-    return <>👑</>
+  if (((num / total) + recommendScore) >= 1) {
+    recommendEmoji = '👑'
   }
 
-  return <></>
+  return <>{recommendEmoji}</>
 }
 
 // 專家推薦勾選
-function handleExportRecommend (e) {
-  console.log(e.target.checked)
+function handleExportRecommend (e, exportRecommend, setExportRecommendFunc) {
+  const matchId = e.target.id.split('_')[0]
+  const playtype = `${e.target.id.split('_')[1]}_${e.target.id.split('_')[2]}`
+  const isRecommended = e.target.checked
+  let newExportRecommend = _.clone(exportRecommend)
+
+  if (isRecommended) {
+    newExportRecommend[playtype].push(matchId)
+  }
+
+  if (!isRecommended) {
+    newExportRecommend[playtype].splice(_.indexOf(newExportRecommend[playtype], matchId), 1)
+  }
+
+  setExportRecommendFunc(newExportRecommend)
 }
 
 // 顯示預測人數
 function ShowData (props) {
   const selectedSport = props.selected
   const predictionResult = props.data
+  const [exportRecommend, setExportRecommend] = useState({
+    away_win: [],
+    home_win: [],
+    handicap_weak: [],
+    handicap_strong: [],
+    total_big: [],
+    total_small: []
+  })
 
   if (selectedSport === '' && predictionResult.length === 0) {
     return <></>
@@ -83,20 +112,22 @@ function ShowData (props) {
         <tbody>
         {
           predictionResult.map((r, index) => {
+            const now = moment().format('A HH:mm')
+
             return (
-              <tr key={r.id}>
-                <td>{r.time}</td>
+              <tr key={index}>
+                <td className={now > r.time ? 'text-danger' : 'text-success'}>{r.time}</td>
                 <td>{r.team_away}<br />@{r.team_home}</td>
                 <td>
-                  <ShowRecommendEmoji num={r.away_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_away_win`} />
+                  <ShowRecommendEmoji match={r} playtype='away_win' exportRecommend={exportRecommend} />
                   {r.team_away}({r.away_win_num})
                   {' '}
-                  <input type='checkbox' id={`${r.id}_away_win`} onClick={handleExportRecommend} />
+                  <input type='checkbox' id={`${r.id}_away_win`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                   <br />
-                  <ShowRecommendEmoji num={r.home_win_num} total={r.away_win_num + r.home_win_num} mid={`${r.id}_home_win`} />
+                  <ShowRecommendEmoji match={r} playtype='home_win' exportRecommend={exportRecommend} />
                   {r.team_home}({r.home_win_num})
                   {' '}
-                  <input type='checkbox' id={`${r.id}_home_win`} />
+                  <input type='checkbox' id={`${r.id}_home_win`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                 </td>
                 <td>
                 {
@@ -123,13 +154,15 @@ function ShowData (props) {
                 }
                 </td>
                 <td>
+                  <ShowRecommendEmoji match={r} playtype='total_big' exportRecommend={exportRecommend} />
                   大{r.total_score}({r.total_big_num})
                   {' '}
-                  <input type='checkbox' id={`${r.id}_total_big`} />
+                  <input type='checkbox' id={`${r.id}_total_big`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                   <br />
+                  <ShowRecommendEmoji match={r} playtype='total_small' exportRecommend={exportRecommend} />
                   小{r.total_score}({r.total_small_num})
                   {' '}
-                  <input type='checkbox' id={`${r.id}_total_small`} />
+                  <input type='checkbox' id={`${r.id}_total_small`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                 </td>
               </tr>
             )
