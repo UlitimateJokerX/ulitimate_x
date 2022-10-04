@@ -48,10 +48,10 @@ function ShowRecommendEmoji (props) {
   const playtype = props.playtype
   const num = props.match[`${props.playtype}_num`]
   const total = num + props.match[`${playtypeCorrespondenceMap[`${playtype}`]}_num`]
-  const recommendScore = _.includes(props.exportRecommend[playtype], props.match.id) ? 0.5 : 0
+  const exportRecommended = _.includes(props.exportRecommend[playtype], props.match.id)
   let recommendEmoji = ''
 
-  if (((num / total) + recommendScore) >= 1) {
+  if ((num / total) > 0.5 && exportRecommended) {
     recommendEmoji = '👑'
   }
 
@@ -112,7 +112,7 @@ function ShowData (props) {
         <tbody>
         {
           predictionResult.map((r, index) => {
-            const now = moment().format('A HH:mm')
+            const now = moment().format('A hh:mm')
 
             return (
               <tr key={index}>
@@ -133,23 +133,27 @@ function ShowData (props) {
                 {
                   r.stronger_team === 'home' ?
                   <>
+                    <ShowRecommendEmoji match={r} playtype='handicap_weak' exportRecommend={exportRecommend} />
                     客+{r.handicap_score}({r.handicap_weak_num})
                     {' '}
-                    <input type='checkbox' id={`${r.id}_handicap_weak`} />
+                    <input type='checkbox' id={`${r.id}_handicap_weak`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                     <br />
+                    <ShowRecommendEmoji match={r} playtype='handicap_strong' exportRecommend={exportRecommend} />
                     主-{r.handicap_score}({r.handicap_strong_num})
                     {' '}
-                    <input type='checkbox' id={`${r.id}_handicap_strong`} />
+                    <input type='checkbox' id={`${r.id}_handicap_strong`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                   </>
                   :
                   <>
+                    <ShowRecommendEmoji match={r} playtype='handicap_strong' exportRecommend={exportRecommend} />
                     客-{r.handicap_score}({r.handicap_strong_num})
                     {' '}
-                    <input type='checkbox' id={`${r.id}_handicap_strong`} />
+                    <input type='checkbox' id={`${r.id}_handicap_strong`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                     <br />
+                    <ShowRecommendEmoji match={r} playtype='handicap_weak' exportRecommend={exportRecommend} />
                     主+{r.handicap_score}({r.handicap_weak_num})
                     {' '}
-                    <input type='checkbox' id={`${r.id}_handicap_weak`} />
+                    <input type='checkbox' id={`${r.id}_handicap_weak`} onClick={e => handleExportRecommend(e, exportRecommend, setExportRecommend)} />
                   </>
                 }
                 </td>
