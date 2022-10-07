@@ -11,15 +11,46 @@ import Notification, { notify } from 'react-notify-bootstrap'
 import classes from '../css/Bank.module.css'
 
 // 新增銀行資訊
-function handleAdd (newBank, funcs) {
-  console.log(newBank)
+async function handleAddBank (newBank, funcs) {
+  funcs.setIsAdding(true)
 
-  // funcs.setCode()
-  // funcs.setBankName()
-  // funcs.setAccountNo()
+  const requestOptions = {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(newBank)
+  }
 
-  // funcs.handleClose()
+  await fetch('/api/bank', requestOptions)
+    .then(r => r.json())
+    .then(d => {
+      if (d.result !== 'ok') {
+        throw new Error(d.msg)
+      }
+
+      notify({
+        text: `Add bank successfully!`,
+        variant: 'success'
+      })
+
+      funcs.setIsAdding(false)
+      funcs.handleClose()
+      window.location.reload()
+    })
+    .catch(e => {
+      notify({
+        text: `Call omnipotent system error: ${e.message}`,
+        variant: 'danger'
+      })
+
+      funcs.setIsAdding(false)
+    })
 }
+
+// 新增
+// async function handleAdd (newBank, funcs) {
+
+
+// }
 
 // 取得單一銀行詳細資料
 async function handleGetBankDetail (code, funcs) {
@@ -48,36 +79,27 @@ async function handleGetBankDetail (code, funcs) {
 // 新增銀行資訊彈跳視窗
 function AddBankModel (props) {
   const show = props.show
-  const handleClose = props.handleClose
-
-  const [code, setCode] = useState()
-  const [bankName, setBankName] = useState()
-  const [accountNo, setAccountNo] = useState()
-  const [currency, setCurrency] = useState()
-  const [isDigital, setIsDigital] = useState()
+  const [code, setCode] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [isAdding, setIsAdding] = useState(false)
 
   const funcs = {
-    handleClose
+    handleClose: props.handleClose,
+    setIsAdding: setIsAdding
   }
 
   const newBank = {
     code: code,
-    bank_name: bankName,
-    account_no: accountNo,
-    currency: currency,
-    is_digital: isDigital
+    name: bankName
   }
 
   function closeModal () {
     // clear input values
     setCode()
     setBankName()
-    setAccountNo()
-    setCurrency()
-    setIsDigital()
 
     // close modal
-    handleClose()
+    funcs.handleClose()
   }
 
   return (
@@ -105,7 +127,76 @@ function AddBankModel (props) {
             </Col>
             <Col sm='2' />
           </Form.Group>
-          <hr />
+          <Form.Group as={Row} className='text-center'>
+            <Col sm='12' className='text-center'>
+            {
+              !isAdding ?
+              <Button variant='info' onClick={e => handleAddBank(newBank, funcs)}>
+                Save
+              </Button>
+              :
+              <Button variant='info' disabled>
+                <Spinner as='span' animation='border' role='status' aria-hidden='true' />
+              </Button>
+            }
+            </Col>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+    </Modal>
+  )
+}
+
+// 新增帳戶資訊彈跳視窗
+function AddAccountModel (props) {
+  const show = props.show
+  const code = props.code
+  const funcs = {
+    handleClose: props.handleClose
+  }
+
+  const [accountNo, setAccountNo] = useState('')
+  const [currency, setCurrency] = useState('')
+  const [isDigital, setIsDigital] = useState('')
+  const [cardPin, setCardPin] = useState('')
+  const [transferDiscountTimes, setTransferDiscountTimes] = useState('')
+  const [withdrawDiscountTimes, setWithdrawDiscountTimes] = useState('')
+  const [webId, setWebId] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
+  const [memo, setMemo] = useState('')
+
+  const newAccount = {
+    code: code,
+    account_no: accountNo,
+    currency: currency,
+    is_digital: isDigital,
+    card_pin: cardPin,
+    transfer_discount_times: transferDiscountTimes,
+    withdraw_discount_times: withdrawDiscountTimes,
+    web_id: webId,
+    email: email,
+    address: address,
+    memo: memo
+  }
+
+  function closeModal () {
+    // clear input values
+    setAccountNo('')
+    setCurrency('')
+    setIsDigital('')
+
+    // close modal
+    // funcs.handleClose()
+  }
+
+  return (
+    <Modal show={show} onHide={closeModal} backdrop='static' size='lg'>
+      <Modal.Header closeButton>
+        <Modal.Title>Add new account information</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
           <Form.Group className='mb-3' as={Row}>
             <Col sm='12' className='text-center'>
               <h3><Badge bg='secondary' size='xl'>Account Information</Badge></h3>
@@ -167,20 +258,20 @@ function AddBankModel (props) {
               <Form.Control
                 type='text'
                 placeholder=''
-                // onChange={e => setCode(e.target.value)}
+                onChange={e => setCardPin(e.target.value)}
               />
             </Col>
             <Col sm='2' />
           </Form.Group>
           <Form.Group className='mb-3' as={Row}>
-            <Form.Label column sm='3' className='text-right'>Fee Discount</Form.Label>
+            <Form.Label column sm='3' className='text-right'>Fee Discount<br />(times per month)</Form.Label>
             <Col sm='1'>
               <Badge bg='info'>Transfer</Badge>
             </Col>
             <Col sm='2'>
               <Form.Control
                 type='text'
-                // onChange={e => setBankName(e.target.value)}
+                onChange={e => setTransferDiscountTimes(e.target.value)}
               />
             </Col>
             <Col sm='1'>
@@ -189,14 +280,56 @@ function AddBankModel (props) {
             <Col sm='2'>
               <Form.Control
                 type='text'
-                // onChange={e => setBankName(e.target.value)}
+                onChange={e => setWithdrawDiscountTimes(e.target.value)}
               />
             </Col>
-            <Form.Label column sm='3' className='text-left'>(times per month)</Form.Label>
+            <Col sm='3' />
+          </Form.Group>
+          <Form.Group className='mb-3' as={Row}>
+            <Form.Label column sm='3' className='text-right'>Web ID</Form.Label>
+            <Col sm='3'>
+              <Form.Control
+                type='text'
+                placeholder=''
+                onChange={e => setWebId(e.target.value)}
+              />
+            </Col>
+            <Form.Label column sm='1'>Email</Form.Label>
+            <Col sm='4'>
+              <Form.Control
+                type='text'
+                placeholder=''
+                onChange={e => setEmail(e.target.value)}
+              />
+            </Col>
+            <Col sm='2'></Col>
+          </Form.Group>
+          <Form.Group className='mb-3' as={Row}>
+            <Form.Label column sm='3' className='text-right'>Address</Form.Label>
+            <Col sm='8'>
+              <Form.Control
+                type='text'
+                placeholder=''
+                onChange={e => setAddress(e.target.value)}
+              />
+            </Col>
+            <Col sm='1'></Col>
+          </Form.Group>
+          <Form.Group className='mb-3' as={Row}>
+            <Form.Label column sm='3' className='text-right'>Memo</Form.Label>
+            <Col sm='8'>
+              <Form.Control
+                as='textarea'
+                placeholder=''
+                onChange={e => setMemo(e.target.value)}
+              />
+            </Col>
+            <Col sm='1'></Col>
           </Form.Group>
           <Form.Group as={Row} className='text-center'>
             <Col sm='12' className='text-center'>
-              <Button variant='info' onClick={e => handleAdd(newBank, funcs)}>
+              {/* <Button variant='info' onClick={e => handleAdd(newAccount, funcs)}> */}
+              <Button variant='info'>
                 Save
               </Button>
             </Col>
@@ -209,16 +342,16 @@ function AddBankModel (props) {
 
 // 列出銀行資訊
 function ShowBankList (props) {
-  const [addModalShow, setAddModalShow] = useState(false)
+  const [addBandModalShow, setAddBankModalShow] = useState(false)
 
-  const handleAddModalShow = () => setAddModalShow(true)
-  const handleAddModalClose = () => setAddModalShow(false)
+  const handleAddBankModalShow = () => setAddBankModalShow(true)
+  const handleAddBankModalClose = () => setAddBankModalShow(false)
 
   const banks = props.bankList
 
   return (
     <>
-      <Button variant='secondary' onClick={handleAddModalShow}>New</Button>
+      <Button variant='secondary' onClick={handleAddBankModalShow}>New</Button>
       <br /><br />
       <Table striped bordered hover variant='dark'>
         <thead>
@@ -251,7 +384,7 @@ function ShowBankList (props) {
         }
         </tbody>
       </Table>
-      <AddBankModel show={addModalShow} handleClose={handleAddModalClose} />
+      <AddBankModel show={addBandModalShow} handleClose={handleAddBankModalClose} />
     </>
   )
 }
@@ -411,6 +544,25 @@ function ShowAccounts (props) {
   )
 }
 
+// 撈取銀行資訊
+async function getBankList (funcs) {
+  funcs.setLoading(true)
+
+  await fetch('/api/banks')
+    .then(r => r.json())
+    .then(d => {
+      funcs.setBankList(d.ret)
+      funcs.setLoading(false)
+    })
+    .catch(e => {
+      notify({
+        text: `Call omnipotent system error: ${e.message}`,
+        variant: 'danger'
+      })
+      funcs.setLoading(false)
+    })
+}
+
 /**
  * 銀行頁面
  */
@@ -425,21 +577,8 @@ function BankPage () {
 
   // 頁面載入時取得資料
   useEffect(() => {
-    getBankList()
+    getBankList({setBankList, setLoading})
   }, [])
-
-  const getBankList = () => {
-    fetch('/api/banks')
-      .then(r => r.json())
-      .then(d => {
-        setBankList(d.ret)
-        setLoading(false)
-      })
-      .catch(e => {
-        alert(`Call omnipotent system error: ${e.message}`)
-        setLoading(false)
-      })
-  }
 
   if (isLoading) {
     return <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />
