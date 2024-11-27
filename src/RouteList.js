@@ -7,18 +7,18 @@ import HomePage from './pages/Home'
 import PredictionPage from './pages/Sports/Prediction'
 import BankPage from './pages/Bank'
 
-function RouteList () {
+function RouteList (props) {
   return (
     <Routes>
       {/* 登入畫面 */}
       <Route path='/login' element={<LoginPage />} />
       <Route path='/logout' element={<LogoutPage />} />
       {/* 首頁 */}
-      <Route path='/' exact element={<HomePage />} />
+      <Route path='/' exact element={<HomePage username={props.username} />} />
       {/* 運動相關 */}
-      <Route path='/sports/prediction' element={<PredictionPage />} />
+      {/* <Route path='/sports/prediction' element={<PredictionPage />} /> */}
       {/* 銀行相關 */}
-      <Route path='/bank' element={<BankPage />} />
+      {/* <Route path='/bank' element={<BankPage />} /> */}
     </Routes>
   )
 }

@@ -23,6 +23,7 @@ function Dropdown (menu, index) {
  */
 function MainNavigation (props) {
   const sessionId = props.sessionId
+  const username = props.username
 
   if (!sessionId) {
     return (
@@ -51,7 +52,7 @@ function MainNavigation (props) {
             })}
           </Nav>
           <Nav className='ml-auto'>
-            <Navbar.Text>Hello!{sessionId}</Navbar.Text>
+            <Navbar.Text>Hello!{username}</Navbar.Text>
             <Nav.Link href='/logout'>Log Out</Nav.Link>
           </Nav>
         </Navbar.Collapse>

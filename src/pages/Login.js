@@ -35,6 +35,7 @@ async function handleLogin (e, userInput, funcs) {
       }
 
       funcs.setSession(d.ret.session_id)
+      funcs.setSessionUsername(d.ret.username)
     })
     .catch(e => {
       alert(`Call omnipotent system error: ${e.message}`)
@@ -45,14 +46,14 @@ async function handleLogin (e, userInput, funcs) {
 /**
  * 登入頁面
  */
-function LoginPage ({setSession}) {
+function LoginPage ({setSession, setSessionUsername}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState()
   const [isLoading, setLoading] = useState(false)
 
   return(
-    <Form className={classes.form} onSubmit={e => handleLogin(e, {username, password}, {setSession, setMessage, setLoading})}>
+    <Form className={classes.form} onSubmit={e => handleLogin(e, {username, password}, {setSession, setSessionUsername, setMessage, setLoading})}>
       <Form.Group className='mb-3' as={Row} controlId='formBasicUsername'>
         <Form.Label column sm='3'>Username</Form.Label>
         <Col sm='9'>

@@ -10,16 +10,24 @@ function Session () {
     setSession(userSessionId)
   }
 
+  // Set Username
+  const setSessionUsername = username => {
+    sessionStorage.setItem('username', username)
+  }
+
   // Remove Session
   const deleteSession = () => {
     sessionStorage.removeItem('session-id')
+    sessionStorage.removeItem('username')
 
     setSession('')
   }
 
   return {
     session_id: sessionId,
+    username: sessionStorage.getItem('username'),
     setSession: saveSession,
+    setSessionUsername,
     deleteSession
   }
 }
