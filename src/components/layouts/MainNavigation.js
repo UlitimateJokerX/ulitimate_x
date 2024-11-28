@@ -29,7 +29,7 @@ function MainNavigation (props) {
     return (
       <Navbar bg='dark' variant='dark' expand='lg'>
         <Container fluid>
-          <Navbar.Brand href='/'>Ultimate X</Navbar.Brand>
+          <Navbar.Brand href='/'>脆皮雪糕</Navbar.Brand>
         </Container>
       </Navbar>
     )
@@ -38,7 +38,7 @@ function MainNavigation (props) {
   return (
     <Navbar bg='dark' variant='dark' expand='lg'>
       <Container fluid>
-        <Navbar.Brand href='/'>Ultimate X</Navbar.Brand>
+        <Navbar.Brand href='/'>脆皮雪糕</Navbar.Brand>
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
         <Navbar.Collapse id='basic-navbar-nav'>
           <Nav className='me-auto'>
