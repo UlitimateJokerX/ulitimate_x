@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import Table from 'react-bootstrap/Table'
 import { Form, Row, Col, Button } from 'react-bootstrap'
-import { Tab, Tabs } from 'react-bootstrap'
 import Badge from 'react-bootstrap/Badge'
 import Notification, { notify } from 'react-notify-bootstrap'
+import Spinner from 'react-bootstrap/Spinner'
 
 import classes from '../css/index.css'
 
-async function handleSend (e, username, getMsgList, funcs) {
+async function handleSend (e, username, funcs) {
+  funcs.setLoading(true)
+
   const newMessage = document.getElementById('new_message').value
+  const getMsgList = funcs.getMsgList
 
   const requestOptions = {
     method: 'POST',
@@ -37,8 +39,11 @@ async function handleSend (e, username, getMsgList, funcs) {
     })
 }
 
-async function handleDel (e, msgId, getMsgList, funcs) {
+async function handleDel (e, msgId, funcs) {
+  funcs.setLoading(true)
+
   const answer = window.confirm('Are you sure you want to delete this message?')
+  const getMsgList = funcs.getMsgList
 
   if (answer) {
     const requestOptions = {
@@ -72,6 +77,7 @@ async function getMsgList (funcs) {
     .then(r => r.json())
     .then(d => {
       funcs.setMsgList(d.ret)
+      funcs.setLoading(false)
     })
     .catch(e => {
       notify({
@@ -85,7 +91,6 @@ async function getMsgList (funcs) {
 function ShowMsgList (props) {
   const msgList = props.msgList
   const loginUser = props.username
-  const getMsgList = props.getMsgList
   const funcs = props.funcs
 
   return (
@@ -108,7 +113,7 @@ function ShowMsgList (props) {
 
                 {
                   loginUser.toLowerCase() == msg.operator.toLowerCase() ?
-                  <button className="btn btn-outline-secondary border-0" type="button" onClick={e => handleDel(e, msg.id, getMsgList, funcs)}>
+                  <button className="btn btn-outline-secondary border-0" type="button" onClick={e => handleDel(e, msg.id, funcs)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                       <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                       <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -135,10 +140,11 @@ function HomePage (props) {
   const username = props.username
 
   const [msgList, setMsgList] = useState([])
+  const [isLoading, setLoading] = useState(true)
 
   // 頁面載入時取得資料
   useEffect(() => {
-    getMsgList({setMsgList})
+    getMsgList({setMsgList, setLoading})
   }, [])
 
   return (
@@ -153,10 +159,21 @@ function HomePage (props) {
       <div className="input-group">
         <textarea id='new_message' className={`${classes.textarea} form-control`} placeholder="I want to say ..." aria-label="message-input" />
         <div className="input-group-append">
-          <button className="btn btn-outline-primary" type="button" onClick={e => handleSend(e, username, getMsgList, {setMsgList})}>Send</button>
+          <button className="btn btn-outline-primary" type="button" onClick={e => handleSend(e, username, {getMsgList, setMsgList, setLoading})}>Send</button>
           {/* <button className="btn btn-outline-secondary" type="button" disabled>Img (coming soon ...)</button> */}
         </div>
       </div>
+
+      <br />
+
+      {
+        isLoading ?
+        <center>
+          <Spinner as='span' variant='info' animation='border' role='status' aria-hidden='true' />
+        </center>
+        :
+        <></>
+      }
 
       {/* 顯示訊息區塊 */}
       <Notification options={{position: 'top'}} />
@@ -164,7 +181,7 @@ function HomePage (props) {
         <Form.Group className='mb-12' as={Row}>
           <Col sm='3' />
           <Col sm='6'>
-            <ShowMsgList msgList={msgList} username={username} getMsgList={getMsgList} funcs={{setMsgList}} />
+            <ShowMsgList msgList={msgList} username={username} funcs={{getMsgList, setMsgList, setLoading}} />
           </Col>
           <Col sm='3' />
         </Form.Group>
