@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form'
 import { Row, Col } from 'react-bootstrap'
 import Spinner from 'react-bootstrap/Spinner'
 import classes from '../css/Login.module.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 async function handleLogin (e, userInput, funcs) {
   e.preventDefault()
@@ -51,9 +51,17 @@ function LoginPage ({setSession, setSessionUsername}) {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState()
   const [isLoading, setLoading] = useState(false)
+  const [clientIp, setClientIp] = useState('')
+
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setClientIp(data.ip))
+      .catch(error => console.log(error))
+  }, [])
 
   return(
-    <Form className={classes.form} onSubmit={e => handleLogin(e, {username, password}, {setSession, setSessionUsername, setMessage, setLoading})}>
+    <Form className={classes.form} onSubmit={e => handleLogin(e, {username, password, client_ip: clientIp}, {setSession, setSessionUsername, setMessage, setLoading})}>
       <Form.Group className='mb-3' as={Row} controlId='formBasicUsername'>
         <Form.Label column sm='3'>Username</Form.Label>
         <Col sm='9'>
