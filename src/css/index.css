@@ -26,3 +26,5 @@ h2 {
 textarea#new_message {
   resize: none !important;;
 }
+
+img.Image {max-width: 100%}

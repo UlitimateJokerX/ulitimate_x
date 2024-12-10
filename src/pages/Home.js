@@ -124,6 +124,14 @@ function ShowMsgList (props) {
                 }
                 <br />
                 {
+                  msg.img !== '' ?
+                  <div>
+                    <a href={msg.img}><img src={msg.img} className='Image' /></a>
+                  </div>
+                  :
+                  <></>
+                }
+                {
                   <pre>{msg.content}</pre>
                 }
                 <hr />
