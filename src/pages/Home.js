@@ -159,7 +159,8 @@ function HomePage (props) {
     <section>
       <center>
         {/* <h5>Welcome to Ulitimate X</h5> */}
-        <h5>Welcome to SurpriseBear's Message Board</h5>
+        <h5>SurpriseBear's Home</h5>
+        <h5><a href='https://reurl.cc/865aKd'>FB</a>、<a href='https://reurl.cc/5D8xAz'>YT</a></h5>
         <br />
       </center>
 
