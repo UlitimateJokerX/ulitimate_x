@@ -123,6 +123,11 @@ function ShowMsgList (props) {
                   <></>
                 }
                 <br />
+
+                {
+                  <pre>{msg.content}</pre>
+                }
+
                 {
                   msg.img !== '' ?
                   <div>
@@ -130,9 +135,6 @@ function ShowMsgList (props) {
                   </div>
                   :
                   <></>
-                }
-                {
-                  <pre>{msg.content}</pre>
                 }
                 <hr />
               </Col>
