@@ -32,7 +32,7 @@ async function handleSend (e, username, funcs) {
       document.getElementById('new_message').value = ''
 
       // reload
-      getMsgList(funcs)
+      getMsgList(funcs, 1)
     })
     .catch(e => {
       alert(`Call omnipotent system error: ${e.message}`)
@@ -72,11 +72,22 @@ async function handleDel (e, msgId, funcs) {
 }
 
 // 撈取訊息
-async function getMsgList (funcs) {
+async function getMsgList (funcs, page = 1) {
   await fetch('/api/message')
     .then(r => r.json())
     .then(d => {
-      funcs.setMsgList(d.ret)
+      const pagedMsgList = []
+
+      for (let i in d.ret) {
+        if (i < (page - 1) * 10 || i >= page * 10) {
+          continue
+        }
+
+        pagedMsgList.push(d.ret[i])
+      }
+
+      funcs.setTotalMsg(d.ret.length)
+      funcs.setMsgList(pagedMsgList)
       funcs.setLoading(false)
     })
     .catch(e => {
@@ -146,15 +157,87 @@ function ShowMsgList (props) {
   )
 }
 
+// 分頁選單
+function Pagination (props) {
+  const totalMsg = props.totalMsg
+  const nowPage = props.nowPage
+  const funcs = props.funcs
+  const pages = Math.ceil(totalMsg / 10)
+  const pagesButton = []
+  const previousClassName = nowPage == 1 ? ' disabled' : ''
+  const nextClassName = nowPage == pages ? ' disabled' : ''
+
+  for (let i = 1; i<= pages; i++) {
+    pagesButton.push(i)
+  }
+
+  return (
+    <nav aria-label="Page navigation">
+      <ul className="pagination justify-content-center">
+        <li className={'page-item' + previousClassName}>
+          <a
+            className="page-link"
+            href="#"
+            tabIndex="-1"
+            onClick={e => handleSelectPage(e, nowPage - 1, funcs)}
+          >
+          Previous
+          </a>
+        </li>
+
+        {
+          pagesButton.map(p => {
+            let pageClassName = 'page-item'
+
+            if (nowPage == p) {
+              pageClassName = pageClassName + ' active'
+            }
+
+            return (
+              <li key={p} className={pageClassName}>
+                <a
+                  className="page-link"
+                  href="#"
+                  onClick={e => handleSelectPage(e, p, funcs)}
+                >
+                {p}
+                </a>
+              </li>
+            )
+          })
+        }
+
+        <li className={'page-item' + nextClassName}>
+          <a
+            className="page-link"
+            href="#"
+            onClick={e => handleSelectPage(e, nowPage + 1, funcs)}
+          >
+          Next
+          </a>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
+function handleSelectPage (e, page, funcs) {
+  funcs.setLoading(true)
+  funcs.setNowPage(page)
+  funcs.getMsgList(funcs, page)
+}
+
 function HomePage (props) {
   const username = props.username
 
   const [msgList, setMsgList] = useState([])
+  const [totalMsg, setTotalMsg] = useState(0)
+  const [nowPage, setNowPage] = useState(1)
   const [isLoading, setLoading] = useState(true)
 
   // 頁面載入時取得資料
   useEffect(() => {
-    getMsgList({setMsgList, setLoading})
+    getMsgList({setMsgList, setLoading, setTotalMsg}, 1)
   }, [])
 
   return (
@@ -170,7 +253,7 @@ function HomePage (props) {
       <div className="input-group">
         <textarea id='new_message' className={`${classes.textarea} form-control`} placeholder="I want to say ..." aria-label="message-input" />
         <div className="input-group-append">
-          <button className="btn btn-outline-primary" type="button" onClick={e => handleSend(e, username, {getMsgList, setMsgList, setLoading})}>Send</button>
+          <button className="btn btn-outline-primary" type="button" onClick={e => handleSend(e, username, {getMsgList, setMsgList, setLoading, setTotalMsg})}>Send</button>
           {/* <button className="btn btn-outline-secondary" type="button" disabled>Img (coming soon ...)</button> */}
         </div>
       </div>
@@ -192,7 +275,9 @@ function HomePage (props) {
         <Form.Group className='mb-12' as={Row}>
           <Col sm='3' />
           <Col sm='6'>
+            <Pagination msgList={msgList} nowPage={nowPage} totalMsg={totalMsg} funcs={{getMsgList, setNowPage, setMsgList, setLoading, setTotalMsg}} />
             <ShowMsgList msgList={msgList} username={username} funcs={{getMsgList, setMsgList, setLoading}} />
+            <Pagination msgList={msgList} nowPage={nowPage} totalMsg={totalMsg} funcs={{getMsgList, setNowPage, setMsgList, setLoading, setTotalMsg}} />
           </Col>
           <Col sm='3' />
         </Form.Group>
