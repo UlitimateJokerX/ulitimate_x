@@ -227,6 +227,43 @@ function handleSelectPage (e, page, funcs) {
   funcs.getMsgList(funcs, page)
 }
 
+// 撈取公告
+async function getAnnouncement (funcs) {
+  await fetch('/api/announcement')
+    .then(r => r.json())
+    .then(d => {
+      const texts = []
+      const links = []
+
+      for (let i in d.ret) {
+        // 1. 文字公告類
+        if (d.ret[i].type == 'text') {
+          texts.push(d.ret[i].text)
+        }
+
+        // 2. 連結類
+        if (d.ret[i].type == 'link') {
+          links.push({
+            id: d.ret[i].id,
+            title: d.ret[i].text,
+            link: d.ret[i].link
+          })
+        }
+      }
+
+      funcs.setAnnouncement({
+        texts: texts,
+        links: links
+      })
+    })
+    .catch(e => {
+      notify({
+        text: `Call omnipotent system error: ${e.message}`,
+        variant: 'danger'
+      })
+    })
+}
+
 function HomePage (props) {
   const username = props.username
 
@@ -234,18 +271,37 @@ function HomePage (props) {
   const [totalMsg, setTotalMsg] = useState(0)
   const [nowPage, setNowPage] = useState(1)
   const [isLoading, setLoading] = useState(true)
+  const [announcement, setAnnouncement] = useState({
+    texts: [], links: []
+  })
 
   // 頁面載入時取得資料
   useEffect(() => {
     getMsgList({setMsgList, setLoading, setTotalMsg}, 1)
+    getAnnouncement({setAnnouncement})
   }, [])
 
   return (
     <section>
       <center>
-        {/* <h5>Welcome to Ulitimate X</h5> */}
         <h5>SurpriseBear's Home</h5>
-        <h5><a href='https://reurl.cc/865aKd'>FB</a>、<a href='https://reurl.cc/5D8xAz'>YT</a></h5>
+        <p>
+          {
+            announcement.texts.join('\n')
+          }
+        </p>
+        <span>
+          {
+            announcement.links.map((l, i) => {
+              return (
+                <span>
+                  <a key={l.id} href={l.link}>{l.title}</a>
+                  {i == announcement.links.length - 1 ? '' : '、'}
+                </span>
+              )
+            })
+          }
+        </span>
         <br />
       </center>
 
