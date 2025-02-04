@@ -168,13 +168,15 @@ function Pagination (props) {
   const nextClassName = nowPage == pages ? ' disabled' : ''
 
   for (let i = 1; i<= pages; i++) {
-    pagesButton.push(i)
+    if (Math.abs(Number(nowPage) - Number(i)) <= 1) {
+      pagesButton.push(i)
+    }
   }
 
   return (
     <nav aria-label="Page navigation">
       <ul className="pagination justify-content-center">
-        <li className={'page-item' + previousClassName}>
+      <li className={'page-item' + previousClassName}>
           <a
             className="page-link"
             href="#"
@@ -184,6 +186,20 @@ function Pagination (props) {
           Previous
           </a>
         </li>
+        {
+          nowPage >= 3 ?
+            <li className={'page-item' + previousClassName}>
+              <a
+                className="page-link"
+                href="#"
+                onClick={e => handleSelectPage(e, 1, funcs)}
+              >
+              {`<<`}
+              </a>
+            </li>
+          :
+          ''
+        }
 
         {
           pagesButton.map(p => {
@@ -205,6 +221,21 @@ function Pagination (props) {
               </li>
             )
           })
+        }
+
+        {
+          Number(pages) - Number(nowPage) >= 2 ?
+            <li className={'page-item' + nextClassName}>
+              <a
+                className="page-link"
+                href="#"
+                onClick={e => handleSelectPage(e, pages, funcs)}
+              >
+              {`>>`}
+              </a>
+            </li>
+          :
+          ''
         }
 
         <li className={'page-item' + nextClassName}>
@@ -294,8 +325,8 @@ function HomePage (props) {
           {
             announcement.links.map((l, i) => {
               return (
-                <span>
-                  <a key={l.id} href={l.link}>{l.title}</a>
+                <span key={l.id}>
+                  <a href={l.link}>{l.title}</a>
                   {i == announcement.links.length - 1 ? '' : '、'}
                 </span>
               )
